@@ -1,0 +1,242 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Vencent Lum
+ * @Date: 2020-01-10 08:30:58
+ * @LastEditors  : Vencent Lum
+ * @LastEditTime : 2020-01-10 16:19:42
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.bootcss.com/zrender/4.1.1/zrender.min.js"></script>
+    <title>明月几时有</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+      const PAGE_HEIGHT = document.body.clientHeight;
+      const PAGE_WIDTH = document.body.clientWidth;
+
+      class LoadScene {
+        opts = null;
+        constructor() {
+          document.querySelector("canvas").width = PAGE_WIDTH;
+          document.querySelector("canvas").height = PAGE_HEIGHT;
+          this.opts = zrender.init(document.querySelector("canvas"), {
+            renderer: "canvas",
+            devicePixelRatio: 1
+          });
+        }
+      }
+
+      (function() {
+   
+        this.createSun = (
+          x = PAGE_WIDTH / 2,
+          y = 100 / 2,
+          x2,
+          y2,
+          colorStops,
+          globalCoord
+        ) => {
+          let linearColor = new zrender.LinearGradient(
+            0,
+            0,
+            1,
+            1,
+            [
+              {
+                offset: 0,
+                color: "gold"
+              },
+              {
+                offset: 1,
+                color: "#eee"
+              }
+            ],
+            globalCoord
+          );
+
+          let sun = new zrender.Circle({
+            shape: {
+              cx: x,
+              cy: y,
+              r: 70
+            },
+            style: {
+              fill: linearColor,
+              stroke: linearColor,
+              shadowBlur: 15,
+              shadowColor: "#652",
+              shadowOffsetY: 5,
+              shadowOffsetX: 5,
+              draggable: true,
+              silent: true
+            }
+          });
+
+          this.opts.add(sun);
+        };
+
+        this.createScene = () => {
+          //https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1578634830458&di=ad8ef48be956a7ce8b7536706ae4aae3&imgtype=0&src=http%3A%2F%2Fimg1.juimg.com%2F160618%2F330831-16061QH94263.jpg
+          let img = new zrender.Image({
+            style: {
+              image: "./002739-1577377659225d.jpg",
+              width: PAGE_WIDTH,
+              height: PAGE_HEIGHT
+            }
+          });
+
+          this.opts.add(img);
+        };
+        this.init = () => {
+          for (let i = 0; i < 100; i++) {
+            this.createRain();
+            this.createStar();
+          }
+          setTimeout(() => {
+            for (let i = 0; i < 50; i++) {
+              this.createRain();
+              this.createCircle();
+            }
+          }, 300);
+        };
+        this.createRain = () => {
+          let initX = Math.random() * PAGE_WIDTH;
+          let rain = new zrender.Droplet({
+            shape: {
+              cx: initX,
+              cy: Math.random() * 50 - 50,
+              width: Math.random() * 2 + 1,
+              height: Math.random() * 10 + 6
+            },
+            style: {
+              fill: "rgba(255,255,255,.8)",
+              stroke: "#f5f3f2"
+            }
+          });
+          rain.animateTo(
+            {
+              shape: {
+                cx: initX + Math.random() * 100 - 100,
+                cy: (Math.random() * PAGE_HEIGHT) / 2 + PAGE_HEIGHT / 2
+              },
+              style: {
+                fill: "rgba(255,255,255,1)"
+              },
+              position: [12, 100]
+            },
+            1200,
+            0,
+            "quadraticIn",
+            () => {
+              this.opts.remove(rain);
+              setTimeout(() => {
+                this.createRain();
+              }, Math.random() * 300);
+            }
+          );
+          this.opts.add(rain);
+        };
+        this.createCircle = () => {
+          let initX = Math.random() * PAGE_WIDTH;
+          let circle = new zrender.Circle({
+            shape: {
+              cx: initX,
+              cy: Math.random() * 50 - 50,
+              r: Math.random() * 2 + 1
+            },
+            style: {
+              fill: "rgba(255,255,255,.8)",
+              stroke: "#f5f3f2"
+            }
+          });
+          circle.animateTo(
+            {
+              shape: {
+                cx: initX + Math.random() * 100 - 100,
+                cy: (Math.random() * PAGE_HEIGHT) / 2 + PAGE_HEIGHT / 2
+              },
+              style: {
+                fill: "rgba(255,255,255,1)"
+              },
+              position: [12, 100]
+            },
+            1800,
+            0,
+            "linear",
+            () => {
+              this.opts.remove(circle);
+              setTimeout(() => {
+                this.createCircle();
+              }, Math.random() * 300);
+            }
+          );
+          this.opts.add(circle);
+        };
+        this.createStar = () => {
+          let initX = Math.random() * PAGE_WIDTH;
+          let star = new zrender.Star({
+            shape: {
+              cx: initX,
+              cy: Math.random() * 50 - 50,
+              n: 8,
+              r: Math.random() * 3 + 3,
+              r0: Math.random() * 2 + 2
+            },
+            //R254 G254 B65
+            style: {
+              fill: "#fff",
+              stroke: "#f5f3f2"
+            }
+          });
+          star.animateTo(
+            {
+              shape: {
+                cx: initX + Math.random() * 100 - 100,
+                cy: (Math.random() * PAGE_HEIGHT) / 2 + PAGE_HEIGHT / 2
+              },
+              style: {
+                fill: "rgba(255,244,233,.7)"
+              },
+              position: [12, 100]
+            },
+            5000,
+            0,
+            "backIn",
+            () => {
+              this.opts.remove(star);
+              setTimeout(() => {
+                this.createStar();
+              }, Math.random() * 1000);
+            }
+          );
+          this.opts.add(star);
+        };
+        this.opts = new LoadScene().opts || new Object();
+
+        this.createScene();
+        this.createSun();
+        this.init();
+        this.opts.configLayer(1, {
+          motionBlur: true,
+          lastFrameAlpha: 0.1
+        });
+      })();
+    </script>
+  </body>
+</html>
